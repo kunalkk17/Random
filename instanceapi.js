@@ -1,25 +1,22 @@
 const express = require("express");
 const router = express.Router();
 
-var db = require('../dao')
+var db = require('../database/db')
 
 // var bodyParser = require("body-parser");
 // app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(bodyParser.json());
 
 router.get("/getinstances", (req, res, next) => {
-    var sql = "select * from user"
-    var params = []
-    db.all(sql, params, (err, rows) => {
-        if (err) {
-          res.status(400).json({"error":err.message});
-          return;
+    db.find({},function(err,docs) {
+        // Start issuing commands after callback...
+        if(err){
+            res.status(400).json({"error":err.message})
+            return;
         }
-        res.json({
-            "message":"success",
-            "data":rows
-        })
-      });
+        return res.json({"message":"Success","data":docs})
+        console.log("database loaded")
+    });
 });
 
 router.post("/createinstance", (req, res, next) => {
@@ -43,19 +40,17 @@ router.post("/createinstance", (req, res, next) => {
         port : req.body.port,
         password : req.body.password
     }
-    var sql ='INSERT INTO user (name, host, port, password) VALUES (?,?,?,?)'
-    var params =[data.name, data.host, data.port, data.password]
-    db.run(sql, params, function (err, result) {
+    db.insert(data, function (err, newDoc) {  
         if (err){
             res.status(400).json({"error": err.message})
             return;
         }
-        res.json({
+        return res.json({
             "message": "success",
-            "data": data,
-            "id" : this.lastID
+            "data": newDoc,
+            "id" : this._id
         })
-    });
+      });
 })
 
 router.patch("/updateinstance/:id", (req, res, next) => {
@@ -65,37 +60,25 @@ router.patch("/updateinstance/:id", (req, res, next) => {
         port : req.body.port,
         password : req.body.password
     }
-    db.run(
-        `UPDATE user set 
-           name = COALESCE(?,name), 
-           host = COALESCE(?,host),
-           port = COALESCE(?,port), 
-           password = COALESCE(?,password) 
-           WHERE id = ?`,
-        [data.name, data.host, data.port, data.password, req.params.id],
-        function (err, result) {
-            if (err){
-                res.status(400).json({"error": res.message})
-                return;
-            }
-            res.json({
-                message: "success",
-                data: data,
-                changes: this.changes
-            })
+    db.update({_id:req.params.id}, data, {},(err)=>{
+        if(err){
+            res.status(400).json({"error": res.message})
+            return;
+        }
+        return res.json({
+            message: "success",
+            data:data
+        })
     });
 })
 
 router.delete("/deleteinstance/:id", (req, res, next) => {
-    db.run(
-        'DELETE FROM user WHERE id = ?',
-        req.params.id,
-        function (err, result) {
-            if (err){
-                res.status(400).json({"error": res.message})
-                return;
-            }
-            res.json({"message":"deleted", changes: this.changes})
+    db.remove ({_id:req.params.id}, {},(err)=>{
+        if(err){
+            res.status(400).json({"error": res.message})
+            return;
+        }
+        else return res.json({"message":"deleted"})
     });
 })
 
