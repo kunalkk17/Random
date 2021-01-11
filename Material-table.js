@@ -1,7 +1,7 @@
-function SimpleAction() {
+function BasicGrouping() {
   return (
     <MaterialTable
-      title="Simple Action Preview"
+      title="Basic Grouping Preview"
       columns={[
         { title: 'Name', field: 'name' },
         { title: 'Surname', field: 'surname' },
@@ -16,13 +16,9 @@ function SimpleAction() {
         { name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },
         { name: 'Zerya Betül', surname: 'Baran', birthYear: 2017, birthCity: 34 },
       ]}        
-      actions={[
-        {
-          icon: 'save',
-          tooltip: 'Save User',
-          onClick: (event, rowData) => alert("You saved " + rowData.name)
-        }
-      ]}
+      options={{
+        grouping: true
+      }}
     />
   )
 }
