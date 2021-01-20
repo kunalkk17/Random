@@ -1,24 +1,27 @@
-function BasicGrouping() {
-  return (
-    <MaterialTable
-      title="Basic Grouping Preview"
-      columns={[
-        { title: 'Name', field: 'name' },
-        { title: 'Surname', field: 'surname' },
-        { title: 'Birth Year', field: 'birthYear', type: 'numeric' },
-        {
-          title: 'Birth Place',
-          field: 'birthCity',
-          lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' },
-        },
-      ]}
-      data={[
-        { name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },
-        { name: 'Zerya Betül', surname: 'Baran', birthYear: 2017, birthCity: 34 },
-      ]}        
-      options={{
-        grouping: true
-      }}
-    />
-  )
-}
+import React from 'react';
+import Paper from '@material-ui/core/Paper';
+import { Grid, Table, TableHeaderRow } from '@devexpress/dx-react-grid-material-ui';
+
+
+const columns = [
+  { name: 'id', title: 'ID' },
+  { name: 'product', title: 'Product' },
+  { name: 'owner', title: 'Owner' },
+];
+const rows = [
+  { id: 0, product: 'DevExtreme', owner: 'DevExpress' },
+  { id: 1, product: 'DevExtreme Reactive', owner: 'DevExpress' },
+];
+
+export default () => (
+  <Paper>
+    <Grid
+      rows={rows}
+      columns={columns}
+    >
+      <Table />
+      <TableHeaderRow />
+    </Grid>
+  </Paper>
+);
+
